@@ -1,6 +1,8 @@
 mod bank;
+mod menu;
 use bank::Bank;
 use bank::read_io;
+use menu::MenuActions;
 
 fn main() {
     let mut bank = Bank { list: Vec::new() };
@@ -16,15 +18,15 @@ fn main() {
         let mut choice = String::new();
         read_io(&mut choice);
 
-        match choice.trim() {
-            "1" => bank.add_client(),
-            "2" => bank.deposit_money(),
-            "3" => bank.display_all(),
-            "4" => {
+        match MenuActions::from_input(&choice) {
+            MenuActions::AddClient => bank.add_client(),
+            MenuActions::Deposit => bank.deposit_money(),
+            MenuActions::Display => bank.display_all(),
+            MenuActions::Exit => {
                 println!("Goodbye!");
                 break;
             }
-            _ => println!("Invalid choice, please try again."),
+            MenuActions::Invalid => println!("Invalid choice, please try again."),
         }
     }
 }
