@@ -41,9 +41,15 @@ impl Bank {
         }
     }
 
+    // Find account
+
+    pub fn find_account(&mut self, name: &str) -> Option<&mut BankAccount> {
+        self.list.iter_mut().find(|acc| acc.owner == name)
+    }
+
     // Deposit money
 
-    pub fn deposit_money(&mut self) -> Option<&mut BankAccount>{
+    pub fn deposit_money(&mut self) {
         println!("Enter the client's name for the deposit:");
 
         let mut name = String::new();
@@ -51,13 +57,24 @@ impl Bank {
 
         let name = name.trim();
 
-        for client in &mut self.list {
-            if client.owner == name {
-                return Some(client);
-            }
-        };
+        match self.find_account(name.trim()) {
+            Some(client) => {
+                println!("Enter amount:");
+                let mut amount_str = String::new();
+                read_io(&mut amount_str);
 
-        None
+                match amount_str.trim().parse::<i32>() {
+                    Ok(amount) if amount > 0 => {
+                        client.balance = client.balance.saturating_add(amount);
+                        println!("Deposit successful! New balance: {}$", client.balance);
+                    }
+                    Ok(_) => println!("Amount must be a positive number."),
+                    Err(_) => println!("Invalid amount entered."),
+                }
+            }
+
+            None => println!("Client not found"),
+        }
     }
 }
 
