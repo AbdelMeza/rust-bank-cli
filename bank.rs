@@ -43,46 +43,21 @@ impl Bank {
 
     // Deposit money
 
-    pub fn deposit_money(&mut self) {
+    pub fn deposit_money(&mut self) -> Option<&mut BankAccount>{
         println!("Enter the client's name for the deposit:");
 
         let mut name = String::new();
-
         read_io(&mut name);
 
         let name = name.trim();
 
-        let mut found = false;
-
         for client in &mut self.list {
             if client.owner == name {
-                println!("Enter amount:");
-
-                let mut amount_str = String::new();
-
-                read_io(&mut amount_str);
-
-                match amount_str.trim().parse::<i32>() {
-                    Ok(amount) if amount > 0 => {
-                        client.balance = client.balance.saturating_add(amount);
-
-                        println!("Deposit successful!");
-                    }
-
-                    Ok(_) => println!("Amount must be a positive number."),
-
-                    Err(_) => println!("Invalid amount entered."),
-                }
-
-                found = true;
-
-                break;
+                return Some(client);
             }
-        }
+        };
 
-        if !found {
-            println!("Client not found.");
-        }
+        None
     }
 }
 
